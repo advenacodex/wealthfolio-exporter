@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
-# holdings_csv.sh — Export holdings per account using Wealthfolio's calculated snapshots.
+# holdings.sh — Export holdings per account using Wealthfolio's calculated snapshots.
+# Writes YYYYMMDD_holdings.csv and YYYYMMDD_holdings.md in the current directory.
 #
 # Usage:
-#   ./scripts/holdings_csv.sh                          # searches for wealthfolio.db
-#   ./scripts/holdings_csv.sh /path/to/wealthfolio.db  # custom path
+#   ./holdings.sh                          # default: /volume2/docker/volumes/wealthfolio/wealthfolio.db
+#   ./holdings.sh /path/to/wealthfolio.db  # custom path
 
 set -euo pipefail
 
@@ -12,7 +13,7 @@ DB="${1:-/volume2/docker/volumes/wealthfolio/wealthfolio.db}"
 
 if [[ ! -f "$DB" ]]; then
   echo "ERROR: database not found." >&2
-  echo "Put wealthfolio.db in the current directory or provide the path as an argument." >&2
+  echo "Checked: $DB — pass the path to wealthfolio.db as an argument." >&2
   exit 1
 fi
 

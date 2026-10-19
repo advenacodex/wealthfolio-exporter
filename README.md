@@ -2,7 +2,7 @@
 
 Script que exporta las posiciones (*holdings*) de [Wealthfolio](https://wealthfolio.app) a CSV y a tabla Markdown, una fila por cuenta y valor.
 
-`holdings.sh` es copia de la versión que corre en producción en kali (`/volume2/docker/scripts/holdings.sh`).
+`holdings.sh` es la misma versión que corre en producción en kali (`/volume2/docker/scripts/holdings.sh`).
 
 ## Qué hace
 
@@ -38,6 +38,6 @@ Estos ficheros contienen datos de tu cartera, por eso `.gitignore` excluye `*_ho
 
 ## Notas
 
-- El comentario de cabecera de `holdings.sh` menciona `holdings_csv.sh` y `./scripts/`; son restos de su origen en el repositorio de Wealthfolio.
+- El fichero es idéntico al de kali. Cualquier cambio hay que hacerlo en los dos sitios.
 - Existe también el addon `holdings-exporter` (botón de descarga dentro de la interfaz de Wealthfolio), que está en el clon de Wealthfolio, no aquí. **No está instalado en producción.**
 - Producción usa la imagen oficial `wealthfolio/wealthfolio:3.9.0`.
