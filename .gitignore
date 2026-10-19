@@ -12,3 +12,7 @@
 secrets.*
 !secrets.example.*
 credentials.json
+
+# Salida del script: datos de cartera, no versionar
+*_holdings.csv
+*_holdings.md
