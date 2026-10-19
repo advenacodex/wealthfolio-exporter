@@ -17,11 +17,12 @@ El script solo lee la base de datos; no la modifica.
 ## Uso
 
 ```bash
-./holdings.sh                          # usa la ruta de producción en kali
-./holdings.sh /ruta/a/wealthfolio.db   # ruta propia
+./holdings.sh                          # $WEALTHFOLIO_DB, o la ruta de producción en kali
+./holdings.sh /ruta/a/wealthfolio.db   # ruta propia (tiene prioridad)
+export WEALTHFOLIO_DB=~/copia/wealthfolio.db   # para no repetir la ruta en el Mac
 ```
 
-La ruta por defecto es `/volume2/docker/volumes/wealthfolio/wealthfolio.db`. Fuera de kali no existe, así que en el Mac hay que pasar la ruta de una **copia** de la base de datos.
+Orden de prioridad: argumento, variable `WEALTHFOLIO_DB`, y por último `/volume2/docker/volumes/wealthfolio/wealthfolio.db`. Esa ruta solo existe en kali, así que en el Mac hay que usar el argumento o la variable con la ruta de una **copia** de la base de datos.
 
 Ejecútalo sobre una copia, no sobre la base de datos en uso, para no interferir con Wealthfolio.
 
@@ -38,6 +39,6 @@ Estos ficheros contienen datos de tu cartera, por eso `.gitignore` excluye `*_ho
 
 ## Notas
 
-- El fichero es idéntico al de kali. Cualquier cambio hay que hacerlo en los dos sitios.
+- La variable `WEALTHFOLIO_DB` está solo en el repo; el `holdings.sh` de kali todavía no la tiene (se comporta igual por defecto). Mantén los dos ficheros iguales: cualquier cambio hay que hacerlo en los dos sitios.
 - Existe también el addon `holdings-exporter` (botón de descarga dentro de la interfaz de Wealthfolio), que está en el clon de Wealthfolio, no aquí. **No está instalado en producción.**
 - Producción usa la imagen oficial `wealthfolio/wealthfolio:3.9.0`.

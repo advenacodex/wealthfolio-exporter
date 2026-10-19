@@ -3,17 +3,17 @@
 # Writes YYYYMMDD_holdings.csv and YYYYMMDD_holdings.md in the current directory.
 #
 # Usage:
-#   ./holdings.sh                          # default: /volume2/docker/volumes/wealthfolio/wealthfolio.db
-#   ./holdings.sh /path/to/wealthfolio.db  # custom path
+#   ./holdings.sh                          # $WEALTHFOLIO_DB, or /volume2/docker/volumes/wealthfolio/wealthfolio.db
+#   ./holdings.sh /path/to/wealthfolio.db  # custom path (takes priority)
 
 set -euo pipefail
 
-DB="${1:-/volume2/docker/volumes/wealthfolio/wealthfolio.db}"
+DB="${1:-${WEALTHFOLIO_DB:-/volume2/docker/volumes/wealthfolio/wealthfolio.db}}"
 
 
 if [[ ! -f "$DB" ]]; then
   echo "ERROR: database not found." >&2
-  echo "Checked: $DB — pass the path to wealthfolio.db as an argument." >&2
+  echo "Checked: $DB — pass the path as an argument or set WEALTHFOLIO_DB." >&2
   exit 1
 fi
 
