@@ -1,2 +1,14 @@
 .DS_Store
 ._*
+
+# Secretos (no versionar nunca; usar *.example como plantilla)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets.*
+!secrets.example.*
+credentials.json
