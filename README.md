@@ -1,44 +1,61 @@
-# wealthfolio_exporter
+# wealthfolio-exporter
 
-Script que exporta las posiciones (*holdings*) de [Wealthfolio](https://wealthfolio.app) a CSV y a tabla Markdown, una fila por cuenta y valor.
+[Español](README.es.md)
 
-`holdings.sh` es la misma versión que corre en producción en kali (`/volume2/docker/scripts/holdings.sh`).
+Exports your [Wealthfolio](https://wealthfolio.app) holdings to **CSV** and a **Markdown** table, one row per account and asset.
 
-## Qué hace
+## How it works
 
-Lee la base de datos SQLite de Wealthfolio (`wealthfolio.db`) y, para cada cuenta, toma su **último snapshot** de `holdings_snapshots`. Los snapshots ya tienen aplicados los splits (p. ej. el 4:1 de Apple), el coste medio y los lotes, así que las cifras coinciden con las de la aplicación. Sumar transacciones a mano fallaba con los splits.
+Reads Wealthfolio's SQLite database (`wealthfolio.db`) read-only and takes the **latest snapshot** of each account from `holdings_snapshots`. Snapshots already include splits, average cost and lots, so the figures match the app. It is safe to run while Wealthfolio is running (SQLite WAL supports concurrent readers).
 
-El script solo lee la base de datos; no la modifica.
+## Requirements
 
-## Requisitos
+`bash`, `sqlite3` (with JSON support), `python3`, and read access to `wealthfolio.db`.
 
-- `bash`, `sqlite3` (con soporte JSON) y `python3`.
-
-## Uso
+## Usage
 
 ```bash
-./holdings.sh                          # $WEALTHFOLIO_DB, o la ruta de producción en kali
-./holdings.sh /ruta/a/wealthfolio.db   # ruta propia (tiene prioridad)
-export WEALTHFOLIO_DB=~/copia/wealthfolio.db   # para no repetir la ruta en el Mac
+./holdings.sh [/path/to/wealthfolio.db]
 ```
 
-Orden de prioridad: argumento, variable `WEALTHFOLIO_DB`, y por último `/volume2/docker/volumes/wealthfolio/wealthfolio.db`. Esa ruta solo existe en kali, así que en el Mac hay que usar el argumento o la variable con la ruta de una **copia** de la base de datos.
+Without an argument it uses the default in the `DB=` line of `holdings.sh`; edit it for your setup.
 
-Ejecútalo sobre una copia, no sobre la base de datos en uso, para no interferir con Wealthfolio.
+To work on a copy, do not copy the `.db` file directly (pending changes live in the `-wal` file). Use:
 
-## Salida
+```bash
+sqlite3 /path/to/wealthfolio.db ".backup copy.db"
+./holdings.sh copy.db
+```
 
-Se escribe en el directorio actual, con la fecha del día:
+## Output
+
+Written to the current directory:
 
 - `YYYYMMDD_holdings.csv`
-- `YYYYMMDD_holdings.md` (misma tabla en Markdown)
+- `YYYYMMDD_holdings.md`
 
-Columnas: `Account`, `Ticker`, `Name`, `First_Buy_Date`, `Shares`, `Market` (MIC del mercado), `Avg_Price`, `Currency`. Solo aparecen posiciones con `Shares > 0`.
+Columns: `Account`, `Ticker`, `Name`, `First_Buy_Date`, `Shares`, `Market` (MIC code), `Avg_Price`, `Currency`. Only positions with `Shares > 0`.
 
-Estos ficheros contienen datos de tu cartera, por eso `.gitignore` excluye `*_holdings.csv` y `*_holdings.md`. No los subas al repositorio.
+## Scheduling
 
-## Notas
+**cron**
 
-- La variable `WEALTHFOLIO_DB` está solo en el repo; el `holdings.sh` de kali todavía no la tiene (se comporta igual por defecto). Mantén los dos ficheros iguales: cualquier cambio hay que hacerlo en los dos sitios.
-- Existe también el addon `holdings-exporter` (botón de descarga dentro de la interfaz de Wealthfolio), que está en el clon de Wealthfolio, no aquí. **No está instalado en producción.**
-- Producción usa la imagen oficial `wealthfolio/wealthfolio:3.9.0`.
+```cron
+0 22 * * * umask 077; cd /path/to/scripts && ./holdings.sh >> holdings.log 2>&1
+```
+
+**n8n** — if n8n runs in a container without `sqlite3`/`python3` or access to the database, use two SSH nodes (same credential) after a Schedule Trigger (`0 22 * * *`):
+
+```bash
+# 1. Cleanup: keep day-1-of-month files in archive/, delete the other exports
+HOLDINGS=/path/to/output && mkdir -p ${HOLDINGS}/archive && find ${HOLDINGS} -maxdepth 1 \( -name '*_holdings.csv' -o -name '*_holdings.md' \) | while read f; do if basename "$f" | grep -qE '^[0-9]{6}01'; then mv "$f" ${HOLDINGS}/archive/; else rm "$f"; fi; done
+
+# 2. Run and move
+cd /path/to/scripts && bash holdings.sh && DATE=$(date +%Y%m%d) && cp ${DATE}*.csv ${DATE}*.md /path/to/output/ && rm ${DATE}*.csv ${DATE}*.md
+```
+
+Use the same output path in both. The cleanup step **deletes** matching `*_holdings.csv`/`*_holdings.md` files in that directory that are not from day 1 of a month.
+
+## Privacy
+
+Generated files contain your portfolio data. `.gitignore` excludes `*_holdings.csv` and `*_holdings.md`; do not commit them. The script never writes to the database.
