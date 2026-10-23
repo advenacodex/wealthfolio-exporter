@@ -19,7 +19,7 @@ fi
 
 OUTPUT="$(date +%Y%m%d)_holdings.csv"
 
-sqlite3 -header -csv "$DB" "
+sqlite3 -csv -header "$DB" "
 WITH latest_snapshots AS (
     SELECT account_id, MAX(snapshot_date) as max_date
     FROM holdings_snapshots
@@ -33,13 +33,21 @@ SELECT
     ROUND(json_extract(pos.value, '$.quantity'), 6)        AS Shares,
     COALESCE(a.instrument_exchange_mic, '')                AS Market,
     ROUND(json_extract(pos.value, '$.averageCost'), 4)     AS Avg_Price,
-    json_extract(pos.value, '$.currency')                  AS Currency
+    json_extract(pos.value, '$.currency')                  AS Currency,
+    ROUND(CAST(q.close AS REAL), 4)                        AS Last_Price,
+    q.day                                                  AS Last_Price_Date
 FROM holdings_snapshots hs
 JOIN latest_snapshots ls ON hs.account_id = ls.account_id
                          AND hs.snapshot_date = ls.max_date
 JOIN accounts acc        ON acc.id = hs.account_id
 CROSS JOIN json_each(hs.positions) AS pos
 JOIN assets a            ON a.id = pos.key
+LEFT JOIN quotes q       ON q.id = (
+    SELECT id FROM quotes
+    WHERE asset_id = a.id
+    ORDER BY day DESC, timestamp DESC
+    LIMIT 1
+)
 WHERE Shares > 0
 ORDER BY Account, Ticker;
 " > "$OUTPUT"

@@ -34,7 +34,9 @@ Written to the current directory:
 - `YYYYMMDD_holdings.csv`
 - `YYYYMMDD_holdings.md`
 
-Columns: `Account`, `Ticker`, `Name`, `First_Buy_Date`, `Shares`, `Market` (MIC code), `Avg_Price`, `Currency`. Only positions with `Shares > 0`.
+Columns: `Account`, `Ticker`, `Name`, `First_Buy_Date`, `Shares`, `Market` (MIC code), `Avg_Price`, `Currency`, `Last_Price`, `Last_Price_Date`. Only positions with `Shares > 0`.
+
+`Last_Price` is the most recent close stored in Wealthfolio's `quotes` table (in the quote's currency) and `Last_Price_Date` is its date. Check the date: an asset whose quote provider has stopped updating keeps its old price. Both are empty if the asset has no quotes.
 
 ## Scheduling
 

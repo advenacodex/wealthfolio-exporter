@@ -34,7 +34,9 @@ Se escribe en el directorio actual:
 - `YYYYMMDD_holdings.csv`
 - `YYYYMMDD_holdings.md`
 
-Columnas: `Account`, `Ticker`, `Name`, `First_Buy_Date`, `Shares`, `Market` (código MIC), `Avg_Price`, `Currency`. Solo posiciones con `Shares > 0`.
+Columnas: `Account`, `Ticker`, `Name`, `First_Buy_Date`, `Shares`, `Market` (código MIC), `Avg_Price`, `Currency`, `Last_Price`, `Last_Price_Date`. Solo posiciones con `Shares > 0`.
+
+`Last_Price` es el último cierre guardado en la tabla `quotes` de Wealthfolio (en la moneda de la cotización) y `Last_Price_Date` su fecha. Conviene mirar la fecha: un activo cuyo proveedor de cotizaciones ha dejado de actualizarse conserva su precio antiguo. Ambos quedan vacíos si el activo no tiene cotizaciones.
 
 ## Programación
 
