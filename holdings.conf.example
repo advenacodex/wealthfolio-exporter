@@ -1,0 +1,11 @@
+# wealthfolio-exporter configuration.
+# Copy this file to holdings.conf (next to holdings.sh) and edit it.
+# holdings.conf is ignored by git; keep your real paths there.
+# This file is sourced by bash, so use VAR="value" with no spaces around "=".
+
+# Path to Wealthfolio's SQLite database (opened read-only).
+DB="/path/to/wealthfolio.db"
+
+# Directory where YYYYMMDD_holdings.csv and .md are written.
+# Leave empty to use the current directory.
+OUTPUT_DIR=""

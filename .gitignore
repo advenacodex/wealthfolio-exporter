@@ -16,3 +16,6 @@ credentials.json
 # Salida del script: datos de cartera, no versionar
 *_holdings.csv
 *_holdings.md
+
+# Configuración local con rutas propias; usar holdings.conf.example como plantilla
+holdings.conf

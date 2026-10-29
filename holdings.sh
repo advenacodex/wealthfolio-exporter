@@ -1,23 +1,51 @@
 #!/usr/bin/env bash
 # holdings.sh — Export holdings per account using Wealthfolio's calculated snapshots.
-# Writes YYYYMMDD_holdings.csv and YYYYMMDD_holdings.md in the current directory.
+# Writes YYYYMMDD_holdings.csv and YYYYMMDD_holdings.md (current directory by default).
+#
+# Configuration: holdings.conf next to this script (copy holdings.conf.example), or the
+# file named in $HOLDINGS_CONF. It is a bash file that sets DB and, optionally, OUTPUT_DIR.
 #
 # Usage:
-#   ./holdings.sh                          # default: /volume2/docker/volumes/wealthfolio/wealthfolio.db
-#   ./holdings.sh /path/to/wealthfolio.db  # custom path
+#   ./holdings.sh                          # database path from holdings.conf
+#   ./holdings.sh /path/to/wealthfolio.db  # path given here overrides holdings.conf
 
 set -euo pipefail
 
-DB="${1:-/volume2/docker/volumes/wealthfolio/wealthfolio.db}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+CONFIG="${HOLDINGS_CONF:-$SCRIPT_DIR/holdings.conf}"
 
+DB=""
+OUTPUT_DIR=""
 
-if [[ ! -f "$DB" ]]; then
-  echo "ERROR: database not found." >&2
-  echo "Checked: $DB — pass the path to wealthfolio.db as an argument." >&2
+if [[ -f "$CONFIG" ]]; then
+  # shellcheck source=/dev/null
+  source "$CONFIG"
+elif [[ -n "${HOLDINGS_CONF:-}" ]]; then
+  echo "ERROR: config file not found: $CONFIG" >&2
   exit 1
 fi
 
-OUTPUT="$(date +%Y%m%d)_holdings.csv"
+DB="${1:-$DB}"
+
+if [[ -z "$DB" ]]; then
+  echo "ERROR: no database path." >&2
+  echo "Create $SCRIPT_DIR/holdings.conf (see holdings.conf.example) or pass the path to wealthfolio.db as an argument." >&2
+  exit 1
+fi
+
+if [[ ! -f "$DB" ]]; then
+  echo "ERROR: database not found." >&2
+  echo "Checked: $DB — set DB in $CONFIG or pass the path as an argument." >&2
+  exit 1
+fi
+
+PREFIX=""
+if [[ -n "$OUTPUT_DIR" ]]; then
+  mkdir -p "$OUTPUT_DIR"
+  PREFIX="${OUTPUT_DIR%/}/"
+fi
+
+OUTPUT="${PREFIX}$(date +%Y%m%d)_holdings.csv"
 
 sqlite3 -csv -header "$DB" "
 WITH latest_snapshots AS (
