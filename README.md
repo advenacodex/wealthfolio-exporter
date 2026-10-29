@@ -61,3 +61,15 @@ Use the same output path in both. The cleanup step **deletes** matching `*_holdi
 ## Privacy
 
 Generated files contain your portfolio data. `.gitignore` excludes `*_holdings.csv` and `*_holdings.md`; do not commit them. The script never writes to the database.
+
+## Disclaimer
+
+wealthfolio-exporter is an independent, unofficial tool: it is not affiliated with, endorsed by, or supported by Wealthfolio. The figures come from the snapshots Wealthfolio itself calculates and are informational only; they are **not financial, investment, or tax advice**. Check them against your own records.
+
+The software is provided "as is", without warranty of any kind. You are responsible for your data: back up `wealthfolio.db` before using it, and review the cleanup step in [Scheduling](#scheduling), which **deletes** files.
+
+## License
+
+[MIT](LICENSE) © 2026 advenacodex
+
+[![Support me on Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/advenacodex)

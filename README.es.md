@@ -61,3 +61,15 @@ Usa la misma ruta de salida en ambos. La limpieza **borra** los `*_holdings.csv`
 ## Privacidad
 
 Los ficheros generados contienen datos de tu cartera. `.gitignore` excluye `*_holdings.csv` y `*_holdings.md`; no los subas al repositorio. El script nunca escribe en la base de datos.
+
+## Aviso legal
+
+wealthfolio-exporter es una herramienta independiente y no oficial: no está afiliada, respaldada ni soportada por Wealthfolio. Las cifras proceden de los snapshots que calcula el propio Wealthfolio y son meramente informativas; **no constituyen asesoramiento financiero, de inversión ni fiscal**. Contrástalas con tus propios registros.
+
+El software se ofrece «tal cual», sin garantía de ningún tipo. Tú eres responsable de tus datos: haz una copia de seguridad de `wealthfolio.db` antes de usarlo y revisa el paso de limpieza de [Programación](#programación), que **borra** ficheros.
+
+## Licencia
+
+[MIT](LICENSE) © 2026 advenacodex
+
+[![Apóyame en Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/advenacodex)
